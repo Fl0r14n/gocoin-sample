@@ -66,8 +66,6 @@ directives.directive('uiGoCoinButton', function () {
                 self.setUrl = function () {
                     var tabWindowId = window.open('about:blank', '_blank');
                     gcPaymentService.invoice.create(self.invoice, function (data) {
-                        console.log('HERE');
-                        console.log(data);
                         if (data) {
                             tabWindowId.location.href = data.gateway_url;
                         }
