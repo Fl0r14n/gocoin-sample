@@ -61,8 +61,10 @@ public class GoCoinController {
      "base_price": 600.00,                                        
      "base_price_currency": "USD",
      "order_id": "1",
+     "customer_email": "john@somewhere.com"
      "cusomer_name": "John_Doe",
-     "item_name": "soda"
+     "item_name": "soda",
+     "item_sku": "12345"
      }
      */
     @RequestMapping(method = RequestMethod.POST, value = "/")

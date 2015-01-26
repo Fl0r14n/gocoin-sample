@@ -1,7 +1,8 @@
 {
-  "name": "angular-route",
-  "version": "1.3.9",
-  "description": "AngularJS router module",
+  "name": "angular-resource",
+  "version": "1.3.10",
+  "description": "AngularJS module for interacting with RESTful server-side data sources",
+  "main": "angular-resource.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +14,7 @@
     "angular",
     "framework",
     "browser",
-    "router",
+    "rest",
     "client-side"
   ],
   "author": "Angular Core Team <angular-core+npm@google.com>",

@@ -14,8 +14,10 @@ public final class SearchQueryBuilder {
     private static final String DATE_START = "start_time";
     private static final String DATE_STOP = "end_time";
     private static final String ORDER_ID = "order_id";
+    private static final String CUSTOMER_EMAIL = "customer_email";
     private static final String CUSTOMER_NAME = "customer_name";
     private static final String ITEM_NAME = "item_name";
+    private static final String ITEM_SKU = "item_sku";
     private static final String DATE_UPDATED = "updated_since";
     private static final String PAGE = "page";
     private static final String PER_PAGE = "per_page";
@@ -71,12 +73,20 @@ public final class SearchQueryBuilder {
                     this.orderId(entry.getValue());
                     break;
                 }
+                case CUSTOMER_EMAIL: {
+                    this.customerEmail(entry.getValue());
+                    break;
+                }
                 case CUSTOMER_NAME: {
                     this.customerName(entry.getValue());
                     break;
                 }
                 case ITEM_NAME: {
                     this.itemName(entry.getValue());
+                    break;
+                }
+                case ITEM_SKU: {
+                    this.itemSKU(entry.getValue());
                     break;
                 }
                 case DATE_UPDATED: {
@@ -130,6 +140,11 @@ public final class SearchQueryBuilder {
         return this;
     }
     
+    public SearchQueryBuilder customerEmail(String customerEmail) {
+        params.put(CUSTOMER_EMAIL, customerEmail);
+        return this;
+    }
+    
     public SearchQueryBuilder customerName(String customerName) {
         params.put(CUSTOMER_NAME, customerName);
         return this;
@@ -137,6 +152,11 @@ public final class SearchQueryBuilder {
 
     public SearchQueryBuilder itemName(String itemName) {
         params.put(ITEM_NAME, itemName);
+        return this;
+    }
+    
+    public SearchQueryBuilder itemSKU(String itemSKU) {
+        params.put(ITEM_SKU, itemSKU);
         return this;
     }
     

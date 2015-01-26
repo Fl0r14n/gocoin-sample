@@ -5,16 +5,18 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body ng-app="app">
-        <div ng-controller="BitcoinController as btc">
-            <img src="img/btc_md_yes.png" alt="Bitcoin"/>
+        <p>In order for the buttons to work you must add a crypto account in the desired crypto currency!</p>
+        <div>
+            <ui-go-coin-button type="BTC" price="10" currency="EUR"></ui-go-coin-button>
         </div>
-        <div ng-controller="LitecoinController as ltc">
-            <img src="img/ltc_md_yes.png" alt="Litecoin"/>
+        <div>
+            <ui-go-coin-button type="LTC" price="10" currency="EUR"></ui-go-coin-button>
         </div>
-        <div ng-controller="DogecoinController as xdg">
-            <img src="img/xdg_md_yes.png" alt="Dogecoin"/>
+        <div>
+            <ui-go-coin-button type="XDG" price="10" currency="EUR"></ui-go-coin-button>
         </div>
         <script type="text/javascript" src="lib/angular/angular.js"></script>
+        <script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>
         <script type="text/javascript" src="js/app.js"></script>
     </body>
 </html>
