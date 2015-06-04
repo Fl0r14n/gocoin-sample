@@ -1,23 +1,15 @@
-package io.safedrive.payments.gocoin;
+package io.safedrive.payments.gocoin.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gocoin.api.GoCoin;
-import com.gocoin.api.Scope;
-import com.gocoin.api.http.JsonMarshaller;
-import com.gocoin.api.http.SearchQueryBuilder;
-import com.gocoin.api.resources.ExchangeRates;
 import com.gocoin.api.resources.Invoice;
 import com.gocoin.api.resources.InvoiceList;
-import com.gocoin.api.resources.Token;
 import com.gocoin.api.resources.Webhook;
-import com.gocoin.api.services.InvoiceService;
-import com.gocoin.api.services.UserService;
+import io.safedrive.payments.gocoin.service.GoCoinService;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,31 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/payment/gocoin", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "api/v1/payment/gocoin", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GoCoinController {
-
-    private static final Logger L = LoggerFactory.getLogger(GoCoinController.class);
-
-    private final InvoiceService invoiceService;
-    private final UserService userService;
-
-    public GoCoinController(String apiKey) {
-        this(apiKey, null);
-    }
-
-    public GoCoinController(String apiKey, String merchantId) {
-        invoiceService = GoCoin.getInvoiceService();
-        userService = GoCoin.getUserService();
-        token = new Token(apiKey, Scope.getScope(Scope.INVOICE_READ_WRITE, Scope.USER_READ));
-        if (null != merchantId) {
-            this.merchantId = merchantId;
-        } else {
-            this.merchantId = userService.getResourceOwner(token).getMerchantId();
-        }
-    }
-    private final Token token;
-    private final String merchantId;
-
+    
+    @Autowired
+    private GoCoinService gcService;
+    
     /*
      {
      "price_currency": "BTC",                                     
@@ -76,36 +49,30 @@ public class GoCoinController {
         }
         //TODO do we need to set up redirect uri when user returns from gocoin paying form if using gateway_url?
         //TODO add order_id, customer_name, item_name at least to identify user and purchase and do filtering
-        return new ResponseEntity<>(invoiceService.createInvoice(token, merchantId, invoice), HttpStatus.OK);
+        return new ResponseEntity<>(gcService.createInvoice(invoice), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
     public @ResponseBody
     InvoiceList listInvoices(@RequestParam Map<String, String> requestParams) {
-        return invoiceService.searchInvoices(token, new SearchQueryBuilder(requestParams));
+        return gcService.listInvoices(requestParams);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}/")
     public @ResponseBody
     Invoice readInvoice(@PathVariable String id) {
-        return invoiceService.getInvoice(token, id);
+        return gcService.readInvoice(id);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/exchange/")
     public @ResponseBody
     String exchangeRate(@RequestParam(value = "crypto") String crypto, @RequestParam(value = "fiat", required = false) String fiat) {
-        ExchangeRates rates = GoCoin.getExchangeRates();
-        return rates.getExchangeRate(crypto, fiat != null ? fiat : "USD");
+        return gcService.exchangeRate(crypto, fiat);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/webhook/")
     public @ResponseBody
     void webhook(@RequestBody Webhook webhook) {
-        //TODO store invoice status for user id in the database
-        try {
-            L.debug(JsonMarshaller.write(webhook));
-        } catch (JsonProcessingException ex) {
-            L.error(ex.getMessage());
-        }
+        gcService.webhook(webhook);
     }
 }

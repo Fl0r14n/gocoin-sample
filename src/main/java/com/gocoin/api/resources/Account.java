@@ -1,5 +1,6 @@
 package com.gocoin.api.resources;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import lombok.Data;
  * "balance":"0.00000000" }
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Account {
 
     @JsonProperty("id")

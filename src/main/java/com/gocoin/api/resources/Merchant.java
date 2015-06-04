@@ -1,5 +1,6 @@
 package com.gocoin.api.resources;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URL;
 import java.util.Date;
@@ -18,6 +19,7 @@ import lombok.Data;
  * "2013-08-13T04:10:49.785Z" }
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Merchant {
 
     @JsonProperty("id")

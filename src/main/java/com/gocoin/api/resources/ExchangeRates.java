@@ -1,6 +1,7 @@
 package com.gocoin.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import java.util.Date;
@@ -11,6 +12,7 @@ import lombok.Data;
  * "timestamp":"2013-12-11T11:25:33.043Z", "prices":{"BTC":{"USD":"889.11"}} }
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExchangeRates {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";

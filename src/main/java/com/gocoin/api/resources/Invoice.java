@@ -59,7 +59,7 @@ import lombok.Data;
 //            "merchant_id": "63d3cd4c-1514-11e3-a3f0-080027fd9579"
 //}
 @Data
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Invoice {
     
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";

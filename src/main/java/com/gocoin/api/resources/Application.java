@@ -1,6 +1,7 @@
 package com.gocoin.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Calendar;
 import lombok.Data;
@@ -20,6 +21,7 @@ import lombok.Data;
  * "allow_grant_type_implicit":false }
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Application {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";

@@ -1,6 +1,7 @@
 package com.gocoin.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URL;
 import java.util.Date;
@@ -15,6 +16,7 @@ import lombok.Data;
  * "merchant_id":"81d9b056-6351-4ca9-950c-2e7932db0aec" }
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
