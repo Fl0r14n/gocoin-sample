@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('app', ['service', 'directive']);
+var app = angular.module('app', ['service', 'directive', 'gocoin']);
 
 app.config(['$resourceProvider', function ($resourceProvider) {
         //!do not remove tailing / from urls

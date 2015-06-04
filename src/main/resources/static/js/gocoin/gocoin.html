@@ -1,0 +1,28 @@
+<div clas="well" ng-controller="GoCoinController as ctrl">
+    <button class="btn btn-default" ng-click="ctrl.showBTCPayment = !ctrl.showBTCPayment">
+    <img src="img/gocoin/btc_md_yes.png" alt="Bitcoin" />
+    </button>
+    <button class="btn btn-default" ng-click="ctrl.showLTCPayment = !ctrl.showLTCPayment">
+    <img src="img/gocoin/ltc_md_yes.png" alt="Litecoin" />
+    </button>
+    <button class="btn btn-default" ng-click="ctrl.showXDGPayment = !ctrl.showXDGPayment">
+    <img src="img/gocoin/xdg_md_yes.png" alt="Litecoin" />
+    </button>
+    
+    <div collapse="!ctrl.showBTCPayment">
+        <div class="well well-lg">
+            Hello BTC
+            <qrcode version="2" error-correction-level="M" size="200" data="asdasdasda"></qrcode>
+        </div>
+    </div>
+    <div collapse="!ctrl.showLTCPayment">
+        <div class="well well-lg">
+            Hello LTC
+        </div>
+    </div>
+    <div collapse="!ctrl.showXDGPayment">
+        <div class="well well-lg">
+            Hello XDG
+        </div>
+    </div>
+</div>
