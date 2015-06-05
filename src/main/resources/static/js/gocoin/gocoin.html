@@ -1,28 +1,84 @@
-<div clas="well" ng-controller="GoCoinController as ctrl">
-    <button class="btn btn-default" ng-click="ctrl.showBTCPayment = !ctrl.showBTCPayment">
-    <img src="img/gocoin/btc_md_yes.png" alt="Bitcoin" />
+<div ng-controller="GoCoinController as ctrl">
+    <button class="btn btn-default" ng-click="ctrl.showPayment('BTC')">
+        <img src="img/gocoin/btc_md_yes.png" alt="Bitcoin" />
     </button>
-    <button class="btn btn-default" ng-click="ctrl.showLTCPayment = !ctrl.showLTCPayment">
-    <img src="img/gocoin/ltc_md_yes.png" alt="Litecoin" />
+    <button class="btn btn-default" ng-click="ctrl.showPayment('LTC')">
+        <img src="img/gocoin/ltc_md_yes.png" alt="Litecoin" />
     </button>
-    <button class="btn btn-default" ng-click="ctrl.showXDGPayment = !ctrl.showXDGPayment">
-    <img src="img/gocoin/xdg_md_yes.png" alt="Litecoin" />
-    </button>
-    
-    <div collapse="!ctrl.showBTCPayment">
-        <div class="well well-lg">
-            Hello BTC
-            <qrcode version="2" error-correction-level="M" size="200" data="asdasdasda"></qrcode>
+    <button class="btn btn-default" ng-click="ctrl.showPayment('XDG')">
+        <img src="img/gocoin/xdg_md_yes.png" alt="Litecoin" />
+    </button>    
+    <div collapse="ctrl.isCollapsed">
+        <div class="well well-lg">            
+            <style scoped>
+                .col-ms-4,
+                .col-ms-8 {
+                    position: relative;
+                    min-height: 1px;
+                    padding-left: 15px;
+                    padding-right: 15px; }
+                @media (min-width: 480px) {
+                    .col-ms-4,
+                    .col-ms-8 {
+                        float: left; }
+                    .col-ms-4 {
+                        width: 33.33333%; }
+                    .col-ms-8 {
+                        width: 66.66667%; }
+                }
+                .visible-ms {
+                    display: none !important;
+                }
+                @media (max-width: 480px) {
+                    .hidden-ms {
+                        display: none !important;
+                    }
+                    .visible-ms {
+                        display: block !important;
+                    }
+                }
+
+                .qrcode {
+                    max-width: 100%;
+                }
+                .payment-panel {
+                    max-width: 780px;
+                }
+                .payment-timer {
+                    font-size: 32px;
+                    font-style: italic;
+                    font-weight: bold;
+                    color: #a94442;
+                }
+            </style>
+            <div class="container-fluid payment-panel">
+
+                <div class="row center-block">
+                    <h3>Payment to Acme inc</h3>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-ms-4">                        
+                        <qrcode class="hidden-ms" version="8" error-correction-level="M" size="230" data="{{ctrl.invoice.crypto_url}}"></qrcode>
+                        <a class="btn btn-default btn-block visible-ms" ng-click="">
+                            Show QR code
+                        </a> 
+                        <a class="btn btn-default btn-block" href="{{ctrl.invoice.crypto_url}}">Launch Wallet</a>
+                    </div>
+
+                    <div class="col-ms-8 ">
+                        <p class="h4"><span>Price: </span><span class="badge">{{ctrl.invoice.base_price}} {{ctrl.invoice.base_price_currency}}</span></p>
+                        <p class="h4"><span>Crypto: </span><span class="badge">{{ctrl.invoice.price}} {{ctrl.invoice.price_currency}}</span></p>                        
+                        <b>{{ctrl.invoice.payment_address}}</b>
+                        <p class="text-center"><a ng-href="" ng-click="checkStatus()">Check for payment</a></p>
+                        <p class="text-center payment-timer">{{ctrl.time_remaining | date:'mm:ss'}}*</p>
+                        <h6>*This address is only active during the allotted time.<br/>It is only useable for this purchase. Do not save it for any reason.</h6>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
-    </div>
-    <div collapse="!ctrl.showLTCPayment">
-        <div class="well well-lg">
-            Hello LTC
-        </div>
-    </div>
-    <div collapse="!ctrl.showXDGPayment">
-        <div class="well well-lg">
-            Hello XDG
-        </div>
-    </div>
+    </div>    
 </div>
