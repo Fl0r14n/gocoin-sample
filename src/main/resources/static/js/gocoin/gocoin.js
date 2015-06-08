@@ -38,7 +38,7 @@ angular.module('gocoin').factory('GoCoinService', ['$resource', function ($resou
         };
     }]);
 
-angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', function ($scope, $interval) {
+angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '$modal', function ($scope, $interval, $modal) {
         var self = this;
         self.isCollapsed = true;
 
@@ -52,11 +52,27 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', f
             price_currency: "BTC",
             status: "unpaid",
             server_time: "2015-06-05T07:56:53.610Z",
-            expires_at: "2015-06-05T08:11:53.572Z",
+            expires_at: "2015-06-05T08:11:53.572Z"
         };
-
+                
         self.showPayment = function (type) {
             self.isCollapsed = !self.isCollapsed;
+        };
+        
+        
+        self.openModal = function(size) {
+            $modal.open({
+                templateUrl: 'qrcodeModal.html',
+                size: size,
+                resolve: {
+                    crypto_url: function() {
+                        return self.invoice.crypto_url;
+                    }
+                },
+                controller: function($scope, $modalInstance, crypto_url) {
+                    $scope.crypto_url = crypto_url;
+                }
+            });
         };
                 
         self.startCountdown = function () {
