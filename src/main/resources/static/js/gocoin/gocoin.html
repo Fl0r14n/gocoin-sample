@@ -37,7 +37,6 @@
                         display: block !important;
                     }
                 }
-
                 .qrcode {
                     max-width: 100%;
                 }
@@ -50,45 +49,44 @@
                     font-weight: bold;
                     color: #a94442;
                 }
-                
+                .payment-expired {
+                    position: absolute;
+                }
                 .modal-sm {
                     margin: 30px auto !important;
                     width: 222px !important;
                 }
             </style>
-            
             <script type="text/ng-template" id="qrcodeModal.html">
                 <qrcode class="modal-payment" version="8" error-correction-level="M" size="220" data="crypto_url"></qrcode>            
             </script>
-            
-            
             <div class="container-fluid payment-panel">
-
                 <div class="row center-block">
                     <h3>Payment to Acme inc</h3>
                 </div>
-
                 <div class="row">
-
-                    <div class="col-ms-4">                        
+                    <div class="col-ms-4" ng-show="ctrl.invoice.crypto_url">                        
                         <qrcode class="hidden-ms" version="8" error-correction-level="M" size="220" data="{{ctrl.invoice.crypto_url}}"></qrcode>
                         <a class="btn btn-default btn-block visible-ms" ng-click="ctrl.openModal('sm')">
                             Show QR code
                         </a> 
                         <a class="btn btn-default btn-block" href="{{ctrl.invoice.crypto_url}}">Launch Wallet</a>
                     </div>
-
+                    <div class="col-ms-4" ng-hide="ctrl.invoice.crypto_url">
+                        <img class="img-responsive" src="img/gocoin/noQR.png" alt="no QR code available">
+                    </div>
                     <div class="col-ms-8 ">
+                        <div ng-show="ctrl.expiredOrPaid()">
+                            <img class="payment-expired" src="img/gocoin/expired.png" alt="expired"/>
+                        </div>
                         <p class="h4"><span>Price: </span><span class="badge">{{ctrl.invoice.base_price}} {{ctrl.invoice.base_price_currency}}</span></p>
                         <p class="h4"><span>Crypto: </span><span class="badge">{{ctrl.invoice.price}} {{ctrl.invoice.price_currency}}</span></p>                        
                         <b>{{ctrl.invoice.payment_address}}</b>
-                        <p class="text-center"><a ng-href="" ng-click="checkStatus()">Check for payment</a></p>
-                        <p class="text-center payment-timer">{{ctrl.time_remaining | date:'mm:ss'}}*</p>
+                        <p class="text-center"><a ng-href="" ng-click="ctrl.checkStatus()">Check payment status</a></p>
+                        <p class="text-center payment-timer" ng-hide="ctrl.expiredOrPaid()">{{ctrl.time_remaining | date:'mm:ss'}}*</p>
                         <h6>*This address is only active during the allotted time.<br/>It is only useable for this purchase. Do not save it for any reason.</h6>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>    

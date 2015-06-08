@@ -38,10 +38,12 @@ angular.module('gocoin').factory('GoCoinService', ['$resource', function ($resou
         };
     }]);
 
-angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '$modal', function ($scope, $interval, $modal) {
+angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '$modal', 'GoCoinService', function ($scope, $interval, $modal, $gcservice) {
         var self = this;
         self.isCollapsed = true;
+        self.type = undefined;
 
+        //dummy data remove this
         self.invoice = {
             base_price: "10.00",
             base_price_currency: "EUR",
@@ -54,9 +56,39 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
             server_time: "2015-06-05T07:56:53.610Z",
             expires_at: "2015-06-05T08:11:53.572Z"
         };
+        
+        self.expiredOrPaid = function() {
+            return self.invoice.status === 'expired' || self.invoice.status === 'paid';
+        };
                 
         self.showPayment = function (type) {
-            self.isCollapsed = !self.isCollapsed;
+            if(type !== self.type) {
+                self.type = type;
+                self.isCollapsed = false;
+                
+                //to test
+                self.invoice.price_currency = type;
+                self.createNewInvoice(self.invoice);
+            } else {
+                self.isCollapsed = !self.isCollapsed;
+            }
+        };
+        
+        self.createNewInvoice = function(invoice) {
+            //TODO get merchant's name
+            console.log('HERE');
+            $gcservice.invoice.create(invoice, function(data) {
+                if(data) {
+                    console.log('HERE1');
+                    console.log(data);
+                    self.invoice = data;
+                    self.timerInit();
+                }
+            });
+        };
+        
+        self.checkStatus = function() {
+            //TODO
         };
         
         
@@ -79,7 +111,7 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
             return self.countdown = $interval(self.countdown, 1000);
         };
         self.stopCountdown = function () {
-            if (self.countdown != null) {
+            if (self.countdown !== null) {
                 return $interval.cancel(self.countdown);
             }
         };
@@ -103,7 +135,6 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
                 self.stopCountdown();
                 return self.startCountdown();
             }
-        };   
-        self.timerInit();
+        };           
     }]);
 
