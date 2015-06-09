@@ -76,14 +76,17 @@
                         <img class="img-responsive" src="img/gocoin/noQR.png" alt="no QR code available">
                     </div>
                     <div class="col-ms-8 ">
-                        <div ng-show="ctrl.expiredOrPaid()">
+                        <div ng-show="self.time_remaining == 0 && ctrl.invoice.status == 'unpaid'">
                             <img class="payment-expired" src="img/gocoin/expired.png" alt="expired"/>
+                        </div>
+                        <div ng-show="self.time_remaining == 0 && ctrl.invoice.status == 'paid'">
+                            <img class="payment-expired" src="img/gocoin/paid.png" alt="paid"/>
                         </div>
                         <p class="h4">Price: <b class="text-primary">{{ctrl.invoice.base_price}}</b><span class="text-primary"> {{ctrl.invoice.base_price_currency_detail.symbol}}</span></p>
                         <p class="h4">Crypto: <span class="text-primary">{{ctrl.invoice.price}} {{ctrl.invoice.price_currency_detail.symbol}}</span></p>                        
                         <b>{{ctrl.invoice.payment_address}}</b>
-                        <p class="text-center"><a ng-href="" ng-click="ctrl.checkStatus()">Check payment status</a></p>
-                        <p class="text-center payment-timer" ng-hide="ctrl.expiredOrPaid()">{{ctrl.time_remaining | date:'mm:ss'}}*</p>
+                        <p class="text-center"><a href="" ng-click="ctrl.checkStatus()">Check payment status</a></p>
+                        <p class="text-center payment-timer" ng-hide="self.time_remaining == 0">{{ctrl.time_remaining | date:'mm:ss'}}*</p>
                         <p class="h6 text-muted">*This address is only active during the allotted time.<br/>It is only useable for this purchase. Do not save it for any reason.</p>
                     </div>
                 </div>

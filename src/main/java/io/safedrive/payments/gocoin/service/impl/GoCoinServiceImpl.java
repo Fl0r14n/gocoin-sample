@@ -72,6 +72,7 @@ public class GoCoinServiceImpl implements GoCoinService {
     @Override
     public void webhook(Webhook webhook) {
         //TODO store invoice status for user id in the database
+        L.info("============Webhook hit==============");
         try {
             L.info(JsonMarshaller.write(webhook));
         } catch (JsonProcessingException ex) {

@@ -39,22 +39,16 @@ angular.module('gocoin').factory('GoCoinService', ['$resource', function ($resou
         };
     }]);
 
-angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '$modal', 'GoCoinService', function ($scope, $interval, $modal, $gcservice) {
+angular.module('gocoin').controller('GoCoinController', ['$scope', '$interval', '$modal', 'GoCoinService', function ($scope, $interval, $modal, $gcservice) {
         var self = this;
         self.isCollapsed = true;
         self.type = undefined;
-        
-        self.expiredOrPaid = function() {
-            if(self.invoice) {
-                return self.invoice.status === 'expired' || self.invoice.status === 'paid';
-            }
-        };
-                
+
         self.showPayment = function (type) {
-            if(type !== self.type) {
+            if (type !== self.type) {
                 self.type = type;
                 self.isCollapsed = false;
-                
+
                 //to test
                 self.createNewInvoice({
                     base_price: "10.00",
@@ -67,38 +61,43 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
                 self.isCollapsed = !self.isCollapsed;
             }
         };
-        
-        self.createNewInvoice = function(invoice) {
-            $gcservice.invoice.create(invoice, function(data) {
-                if(data) {
+        self.createNewInvoice = function (invoice) {
+            $gcservice.invoice.create(invoice, function (data) {
+                if (data) {
                     self.invoice = data;
-                    if(data.crypto_url) {
-                        self.merchantName = unescape(data.crypto_url.substring(data.crypto_url.indexOf('label=')+6));
+                    if (data.crypto_url) {
+                        self.merchantName = unescape(data.crypto_url.substring(data.crypto_url.indexOf('label=') + 6));
                     }
                     self.timerInit();
                 }
             });
         };
-        
-        self.checkStatus = function() {
-            //TODO
+        self.checkStatus = function () {
+            $gcservice.invoice.get({id: self.invoice.id}, function (data) {
+                if (data) {
+                    console.log(data);
+                    self.invoice = data;
+                    //no good need state machine
+                    if(self.invoice.status === 'underpaid') {
+                        self.timerInit();
+                    }
+                }
+            });
         };
-        
-        self.openModal = function(size) {
+        self.openModal = function (size) {
             $modal.open({
                 templateUrl: 'qrcodeModal.html',
                 size: size,
                 resolve: {
-                    crypto_url: function() {
+                    crypto_url: function () {
                         return self.invoice.crypto_url;
                     }
                 },
-                controller: function($scope, $modalInstance, crypto_url) {
+                controller: function ($scope, $modalInstance, crypto_url) {
                     $scope.crypto_url = crypto_url;
                 }
             });
         };
-                
         self.startCountdown = function () {
             return self.countdown = $interval(self.countdown, 1000);
         };
@@ -127,6 +126,6 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
                 self.stopCountdown();
                 return self.startCountdown();
             }
-        };           
+        };
     }]);
 
