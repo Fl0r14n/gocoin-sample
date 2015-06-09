@@ -12,6 +12,7 @@ angular.module('gocoin').factory('GoCoinService', ['$resource', function ($resou
         };
         self.invoiceUrl = self.endpoint('payment/gocoin');
         self.exchangeUrl = self.endpoint('payment/gocoin/exchange');
+        self.merchantUrl = self.endpoint('payment/gocoin/merchant');
         return {
             invoice: $resource(self.invoiceUrl + ':id/', {id: '@id'}, {
                 'create': {
@@ -42,23 +43,11 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
         var self = this;
         self.isCollapsed = true;
         self.type = undefined;
-
-        //dummy data remove this
-        self.invoice = {
-            base_price: "10.00",
-            base_price_currency: "EUR",
-            crypto_url: "bitcoin:1GacAiUccggYdG6QCeTeGxtEtkmQTQam36?amount=0.0515&label=Payment%20to%20acme+inc",
-            merchant_id: "f2fe3ccb-e509-4d58-b652-ede24636c422",
-            payment_address: "1GacAiUccggYdG6QCeTeGxtEtkmQTQam36",
-            price: 0.0515,
-            price_currency: "BTC",
-            status: "unpaid",
-            server_time: "2015-06-05T07:56:53.610Z",
-            expires_at: "2015-06-05T08:11:53.572Z"
-        };
         
         self.expiredOrPaid = function() {
-            return self.invoice.status === 'expired' || self.invoice.status === 'paid';
+            if(self.invoice) {
+                return self.invoice.status === 'expired' || self.invoice.status === 'paid';
+            }
         };
                 
         self.showPayment = function (type) {
@@ -67,21 +56,25 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
                 self.isCollapsed = false;
                 
                 //to test
-                self.invoice.price_currency = type;
-                self.createNewInvoice(self.invoice);
+                self.createNewInvoice({
+                    base_price: "10.00",
+                    base_price_currency: "EUR",
+                    price_currency: self.type,
+                    callback_url: null,
+                    redirect_url: null
+                });
             } else {
                 self.isCollapsed = !self.isCollapsed;
             }
         };
         
         self.createNewInvoice = function(invoice) {
-            //TODO get merchant's name
-            console.log('HERE');
             $gcservice.invoice.create(invoice, function(data) {
                 if(data) {
-                    console.log('HERE1');
-                    console.log(data);
                     self.invoice = data;
+                    if(data.crypto_url) {
+                        self.merchantName = unescape(data.crypto_url.substring(data.crypto_url.indexOf('label=')+6));
+                    }
                     self.timerInit();
                 }
             });
@@ -90,7 +83,6 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
         self.checkStatus = function() {
             //TODO
         };
-        
         
         self.openModal = function(size) {
             $modal.open({
@@ -120,7 +112,7 @@ angular.module('gocoin').controller('GoCoinController', ['$scope','$interval', '
                 return self.time_remaining -= 1000;
             } else {
                 self.stopCountdown();
-                //return invoiceService.notify("expired");
+                self.checkStatus();
             }
         };
         self.timerInit = function () {

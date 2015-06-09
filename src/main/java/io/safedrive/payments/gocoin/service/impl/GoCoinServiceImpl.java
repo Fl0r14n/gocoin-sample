@@ -11,19 +11,23 @@ import com.gocoin.api.resources.Invoice;
 import com.gocoin.api.resources.InvoiceList;
 import com.gocoin.api.resources.Token;
 import com.gocoin.api.resources.Webhook;
+import com.gocoin.api.services.MerchantService;
 import com.gocoin.api.services.UserService;
 import io.safedrive.payments.gocoin.service.GoCoinService;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GoCoinServiceImpl implements GoCoinService {
     
-    private static final Logger L = Logger.getLogger(GoCoinServiceImpl.class);
+    private static final Logger L = LoggerFactory.getLogger(GoCoinServiceImpl.class);
 
     private final InvoiceService invoiceService = GoCoin.getInvoiceService();
 
     private final UserService userService = GoCoin.getUserService();
+    
+    private final MerchantService merchantService = GoCoin.getMerchantService();
     
     public GoCoinServiceImpl(String apiKey, String merchantId) {
         this.token = new Token(apiKey, Scope.getScope(Scope.INVOICE_READ_WRITE, Scope.USER_READ));
@@ -36,6 +40,11 @@ public class GoCoinServiceImpl implements GoCoinService {
     public void postContruct() {
         if (null == merchantId || merchantId.isEmpty()) {
             this.merchantId = userService.getResourceOwner(token).getMerchantId();
+        }
+        try {
+            L.info(JsonMarshaller.write(merchantService.getMerchant(token, merchantId)));
+        } catch (JsonProcessingException ex) {
+            L.error(ex.getMessage());
         }
     }
 
@@ -64,9 +73,27 @@ public class GoCoinServiceImpl implements GoCoinService {
     public void webhook(Webhook webhook) {
         //TODO store invoice status for user id in the database
         try {
-            L.debug(JsonMarshaller.write(webhook));
+            L.info(JsonMarshaller.write(webhook));
         } catch (JsonProcessingException ex) {
             L.error(ex.getMessage());
         }
+        Invoice invoice = webhook.getInvoice();
+        switch(webhook.getEvent()) {
+            case Webhook.EVENT_PAYMENT_RECEIVED: {
+                if(invoice.getStatus().equals(Invoice.STATUS_PAID)) {
+                    //Mark Order Payment as Pending or Similar Status
+                }
+                break;
+            }
+            case Webhook.EVENT_INVOICE_INVALID: {
+                // Mark Order Payment as Failed
+                break;
+            }
+            case Webhook.EVENT_READY_TO_SHIP: {
+                // Mark Order Payment as Completed
+                break;
+            }
+        }
+        
     }
 }
