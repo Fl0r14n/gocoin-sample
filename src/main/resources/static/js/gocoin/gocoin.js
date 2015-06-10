@@ -6,10 +6,11 @@ angular.module('gocoin', ['ngResource', 'ui.bootstrap', 'monospaced.qrcode']).co
 
 angular.module('gocoin').factory('GoCoinService', ['$resource', function ($resource) {
         var self = this;
+        self.imgPath = 'img/gocoin/';
         self.api = 'api/v1/';
         self.endpoint = function (resource) {
             return self.api + resource + '/';
-        };
+        };        
         self.invoiceUrl = self.endpoint('payment/gocoin');
         self.exchangeUrl = self.endpoint('payment/gocoin/exchange');
         self.merchantUrl = self.endpoint('payment/gocoin/merchant');
@@ -35,11 +36,89 @@ angular.module('gocoin').factory('GoCoinService', ['$resource', function ($resou
                         'Content-Type': 'application/json'
                     }
                 }
-            })
+            }),
+            img: {
+                btcButton: self.imgPath + 'btc_icon.png',
+                ltcButton: self.imgPath + 'ltc_icon.png',
+                xdgButton: self.imgPath + 'xdg_icon.png',
+                noQRCode: self.imgPath + 'no_qr_code.png',
+                expiredStamp: self.imgPath + 'expired_stamp.png',
+                paid: self.imgPath + 'paid_stamp.png'
+            }
         };
     }]);
 
-angular.module('gocoin').directive("uiGoCoinPanel", function () {
+angular.module('gocoin').directive('uiGoCoinButton', function () {
+    return {
+        replace: false,
+        restrict: 'EA',
+        scope: {
+            type: '@',
+            price: '@',
+            currency: '@',
+            orderId: '@',
+            customerEmail: '@',
+            customerName: '@',
+            itemName: '@',
+            itemSku: '@'
+        },
+        controllerAs: 'gocoin',
+        controller: [
+            '$scope',
+            'GoCoinService',
+            function ($scope, $gcservice) {
+                var self = this;
+                self.img = $gcservice.img;
+
+                self.invoice = {
+                    price_currency: $scope.type,
+                    base_price: $scope.price,
+                    base_price_currency: $scope.currency,
+                    order_id: $scope.orderId,
+                    customer_email: $scope.customerEmail,
+                    customer_name: $scope.customerName,
+                    item_name: $scope.itemName,
+                    item_sku: $scope.itemSku
+                };
+
+                self.setUrl = function () {
+                    var tabWindowId = window.open('about:blank', '_blank');
+                    $gcservice.invoice.create(self.invoice, function (data) {
+                        if (data) {
+                            tabWindowId.location.href = data.gateway_url;
+                        }
+                    });
+                };
+
+                self.hasType = function () {
+                    return !angular.isUndefined(self.invoice.price_currency);
+                };
+
+                self.isBitcoin = function () {
+                    return self.invoice.price_currency.toUpperCase() === 'BTC';
+                };
+
+                self.isLitecoin = function () {
+                    return self.invoice.price_currency.toUpperCase() === 'LTC';
+                };
+
+                self.isDogecoin = function () {
+                    return self.invoice.price_currency.toUpperCase() === 'XDG';
+                };
+            }
+        ],
+        template: [
+            '<a href="" target="_blank" ng-mousedown="gocoin.setUrl()" ng-model="gocoin.invoice" ng-if="gocoin.hasType()" >',
+            '   <img ng-if="gocoin.isBitcoin()" src="{{gocoin.img.btcButton}}" alt="Bitcoin" />',
+            '   <img ng-if="gocoin.isLitecoin()" src="{{gocoin.img.ltcButton}}" alt="Litecoin" />',
+            '   <img ng-if="gocoin.isDogecoin()" src="{{gocoin.img.xdgButton}}" alt="Dogecoin" />',
+            '</a>'
+        ].join('')
+    };
+})
+
+
+angular.module('gocoin').directive('uiGoCoinPanel', function () {
     return {
         replace: false,
         restrict: 'EA',
@@ -63,16 +142,7 @@ angular.module('gocoin').directive("uiGoCoinPanel", function () {
                 self.isCollapsed = true;
                 self.type = undefined;
                 self.time_remaining = null;
-
-                self.imgPath = 'img/gocoin/';
-                self.img = {
-                    btcButton: self.imgPath + 'btc_md_yes.png',
-                    ltcButton: self.imgPath + 'ltc_md_yes.png',
-                    xdgButton: self.imgPath + 'xdg_md_yes.png',
-                    noQRCode: self.imgPath + 'noQR.png',
-                    expiredStamp: self.imgPath + 'expired.png',
-                    paid: self.imgPath + 'paid.png'
-                };
+                self.img = $gcservice.img;
 
                 self.openModal = function (size) {
                     $modal.open({
@@ -244,7 +314,7 @@ angular.module('gocoin').directive("uiGoCoinPanel", function () {
             '                }',
             '            </style>',
             '            <script type="text/ng-template" id="qrcodeModal.html">',
-            '                <qrcode class="modal-payment" version="8" error-correction-level="M" size="220" data="crypto_url"></qrcode>',
+            '                <qrcode class="modal-payment" version="8" error-correction-level="M" size="220" data="{{crypto_url}}"></qrcode>',
             '            </script>',
             '            <div class="container-fluid payment-panel">',
             '                <div class="row center-block">',
