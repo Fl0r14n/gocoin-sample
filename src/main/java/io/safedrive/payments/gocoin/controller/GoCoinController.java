@@ -46,7 +46,7 @@ public class GoCoinController {
         } catch (MalformedURLException ex) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        //TODO do we need to set up redirect uri when user returns from gocoin paying form if using gateway_url?
+        //TODO do we need to set up redirect uri when user returns from gocoin paying form if using redirect_url?
         //TODO add order_id, customer_name, item_name at least to identify user and purchase and do filtering
         return new ResponseEntity<>(gcService.createInvoice(invoice), HttpStatus.OK);
     }
