@@ -11,7 +11,6 @@ import com.gocoin.api.resources.Invoice;
 import com.gocoin.api.resources.InvoiceList;
 import com.gocoin.api.resources.Token;
 import com.gocoin.api.resources.Webhook;
-import com.gocoin.api.services.MerchantService;
 import com.gocoin.api.services.UserService;
 import io.safedrive.payments.gocoin.service.GoCoinService;
 import java.security.MessageDigest;
