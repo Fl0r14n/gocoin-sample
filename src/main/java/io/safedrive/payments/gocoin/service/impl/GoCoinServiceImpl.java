@@ -44,11 +44,6 @@ public class GoCoinServiceImpl implements GoCoinService {
         if (null == merchantId || merchantId.isEmpty()) {
             this.merchantId = userService.getResourceOwner(token).getMerchantId();
         }
-        try {
-            L.info(JsonMarshaller.write(merchantService.getMerchant(token, merchantId)));
-        } catch (JsonProcessingException ex) {
-            L.error(ex.getMessage());
-        }
     }
 
     @Override
