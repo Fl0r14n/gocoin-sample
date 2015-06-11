@@ -1,42 +1,17 @@
+/* global angular */
+
 'use strict';
 
-angular.module('gocoin', ['ngResource', 'ui.bootstrap', 'monospaced.qrcode']).config(['$compileProvider', function ($compileProvider) {
+angular.module('gocoin', ['ui.bootstrap', 'monospaced.qrcode']).config(['$compileProvider', function ($compileProvider) {
         return $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|bitcoin|litecoin|dogecoin):/);
     }]);
 
-angular.module('gocoin').factory('GoCoinService', ['$resource', function ($resource) {
+angular.module('gocoin').factory('GoCoinService', ['RestResource', function (restResource) {
         var self = this;
         self.imgPath = 'img/gocoin/';
-        self.api = 'api/v1/';
-        self.endpoint = function (resource) {
-            return self.api + resource + '/';
-        };        
-        self.invoiceUrl = self.endpoint('payment/gocoin');
-        self.exchangeUrl = self.endpoint('payment/gocoin/exchange');
-        self.merchantUrl = self.endpoint('payment/gocoin/merchant');
         return {
-            invoice: $resource(self.invoiceUrl + ':id/', {id: '@id'}, {
-                'create': {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                },
-                'list': {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            }),
-            exchange: $resource(self.exchangeUrl, {}, {
-                get: {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            }),
+            invoice: restResource.$rest('payment/gocoin'),
+            exchange: restResource.$rest('payment/gocoin/exchange'),
             img: {
                 btcButton: self.imgPath + 'btc_icon.png',
                 ltcButton: self.imgPath + 'ltc_icon.png',
@@ -83,7 +58,7 @@ angular.module('gocoin').directive('uiGoCoinButton', function () {
 
                 self.setUrl = function () {
                     var tabWindowId = window.open('about:blank', '_blank');
-                    $gcservice.invoice.create(self.invoice, function (data) {
+                    $gcservice.invoice.save(self.invoice, function (data) {
                         if (data) {
                             tabWindowId.location.href = data.gateway_url;
                         }
@@ -115,7 +90,7 @@ angular.module('gocoin').directive('uiGoCoinButton', function () {
             '</a>'
         ].join('')
     };
-})
+});
 
 
 angular.module('gocoin').directive('uiGoCoinPanel', function () {
@@ -179,7 +154,7 @@ angular.module('gocoin').directive('uiGoCoinPanel', function () {
                 };
 
                 self.createNewInvoice = function (invoice) {
-                    $gcservice.invoice.create(invoice, function (data) {
+                    $gcservice.invoice.save(invoice, function (data) {
                         if (data.id) {
                             self.invoice = data;
                             if (data.crypto_url) {
