@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "api/v1/payment/gocoin", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GoCoinController {
-    
+
     @Autowired
     private GoCoinService gcService;
-    
+
     /*
      {
      "price_currency": "BTC",                                     
@@ -41,13 +41,12 @@ public class GoCoinController {
      */
     @RequestMapping(method = RequestMethod.POST, value = "/")
     public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice, HttpServletRequest request) {
+        //TODO do we need to set up redirect uri when user returns from gocoin paying form if using redirect_url?
         try {
             invoice.setCallbackUrl(new URL(request.getRequestURL().append("webhook/").toString()));
         } catch (MalformedURLException ex) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        //TODO do we need to set up redirect uri when user returns from gocoin paying form if using redirect_url?
-        //TODO add order_id, customer_name, item_name at least to identify user and purchase and do filtering
         return new ResponseEntity<>(gcService.createInvoice(invoice), HttpStatus.OK);
     }
 

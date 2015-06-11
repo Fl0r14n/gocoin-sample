@@ -83,7 +83,6 @@ public class GoCoinApiTestCase {
                 newInvoice.setPriceCurrency("BTC");
                 newInvoice.setBasePrice("124.00");
                 newInvoice.setBasePriceCurrency("USD");
-                newInvoice.setNotificationLevel("all");
             }
             newInvoice = GoCoin.getInvoiceService().createInvoice(t, MERCHANT_ID, newInvoice);
             System.out.println("[DEBUG]: created invoice: " + newInvoice);
