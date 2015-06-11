@@ -30,8 +30,6 @@ public class GoCoinServiceImpl implements GoCoinService {
 
     private final UserService userService = GoCoin.getUserService();
 
-    private final MerchantService merchantService = GoCoin.getMerchantService();
-
     public GoCoinServiceImpl(String apiKey, String merchantId) {
         this.token = new Token(apiKey, Scope.getScope(Scope.INVOICE_READ_WRITE, Scope.USER_READ));
         this.merchantId = merchantId;
